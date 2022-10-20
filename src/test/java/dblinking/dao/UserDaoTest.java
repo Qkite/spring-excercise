@@ -11,7 +11,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.SQLException;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static sun.nio.cs.Surrogate.is;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = UserDaoFactory.class)
@@ -27,6 +29,14 @@ class UserDaoTest {
 
         User selectedUser = userDao.findById("8");
         Assertions.assertEquals("EternityHwan", selectedUser.getName());
+    }
+
+    @Test
+    void addAndGet(){
+
+        UserDao userDao = context.getBean("localConnectionMaker", UserDao.class);
+        userDao.deleteAll();
+        assertThat(userDao.getCount(), is(0));
     }
 
 
