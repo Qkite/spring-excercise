@@ -25,15 +25,40 @@ public class UserDao {
 
     public void add(User user) throws SQLException, ClassNotFoundException {
 
-        Connection c = connectionMaker.makeConnection();
-        PreparedStatement ps = c.prepareStatement("INSERT INTO users(id, name, password) VALUES(?, ?, ?)");
-        ps.setString(1, user.getId());
-        ps.setString(2, user.getName());
-        ps.setString(3, user.getPassword());
+        Connection c = null;
+        PreparedStatement ps = null;
+        try {
 
-        ps.executeUpdate();
-        ps.close();
-        c.close();
+            c = connectionMaker.makeConnection();
+            ps = c.prepareStatement("INSERT INTO users(id, name, password) VALUES(?, ?, ?)");
+            ps.setString(1, user.getId());
+            ps.setString(2, user.getName());
+            ps.setString(3, user.getPassword());
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(ps != null){
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+
+                }
+
+            }
+
+            if(c != null){
+                try {
+                    c.close();
+                } catch (SQLException e) {
+
+                }
+            }
+        }
+
     }
 
     public User findById(String id) throws SQLException, ClassNotFoundException {
@@ -65,29 +90,79 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException, ClassNotFoundException {
-        Connection c = connectionMaker.makeConnection();
+        Connection c = null;
+        PreparedStatement ps = null;
+        try {
+            c = connectionMaker.makeConnection();
+            ps = c.prepareStatement("delete from users");
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally { // error가 나도 실행되는 블럭
+            if(ps != null){
+                try {
+                    ps.close();
+                } catch (SQLException e) {
 
-        PreparedStatement ps = c.prepareStatement("delete from users");
+                }
+            }
 
-        ps.executeUpdate();
-        ps.close();
-        c.close();
+            if(c != null){
+                try {
+                    c.close();
+                } catch (SQLException e) {
+
+                }
+            }
+
+        }
+
+
     }
 
     public int getCount() throws SQLException, ClassNotFoundException {
-        Connection c = connectionMaker.makeConnection();
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        int count = 0;
+        try {
 
-        PreparedStatement ps = c.prepareStatement("select count(*) from users");
+            c = connectionMaker.makeConnection();
+            ps = c.prepareStatement("select count(*) from users");
+            rs = ps.executeQuery();
+            rs.next();
+            count = rs.getInt(1);
 
-        ResultSet rs = ps.executeQuery();
-        rs.next();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
 
-        int count = rs.getInt(1);
+            if(rs != null){
+                try {
+                    rs.close();
+                } catch (SQLException e) {
 
-        rs.close();
-        ps.close();
-        c.close();
+                }
+            }
+            if (ps!=null){
+                try {
+                    ps.close();
+                } catch (SQLException e) {
 
+                }
+            }
+            if (c!=null){
+                try {
+                    c.close();
+                } catch (SQLException e) {
+
+                }
+            }
+        }
         return count;
     }
 
