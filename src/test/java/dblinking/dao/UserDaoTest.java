@@ -23,10 +23,21 @@ class UserDaoTest {
     ApplicationContext context;
 
     UserDao userDao;
+    User user1;
+    User user2;
+    User user3;
+    
+    
 
     @BeforeEach
     void setUp(){
         this.userDao = context.getBean("localConnectionMaker", UserDao.class);
+        
+        // 픽스처: 여러 테스트에서 반복적으로 사용되는 부분 -> BeforeEach 를 이용해서 생성해두면 편리함
+        this.user1 = new User("121", "박성철", "61321");
+        this.user2 = new User("122", "이길원", "82465");
+        this.user3 = new User("123", "박범진", "55064");
+
     }
 
 
@@ -58,9 +69,6 @@ class UserDaoTest {
 
     @Test
     void count() throws SQLException, ClassNotFoundException {
-        User user1 = new User("121", "박성철", "61321");
-        User user2 = new User("122", "이길원", "82465");
-        User user3 = new User("123", "박범진", "55064");
 
         userDao.deleteAll();
         assertEquals(userDao.getCount(), 0);
