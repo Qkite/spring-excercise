@@ -11,9 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.SQLException;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static sun.nio.cs.Surrogate.is;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = UserDaoFactory.class)
@@ -32,11 +30,21 @@ class UserDaoTest {
     }
 
     @Test
-    void addAndGet(){
+    void addAndGet() throws SQLException, ClassNotFoundException {
 
         UserDao userDao = context.getBean("localConnectionMaker", UserDao.class);
         userDao.deleteAll();
-        assertThat(userDao.getCount(), is(0));
+        assertEquals(userDao.getCount(), 0);
+
+        User user = new User("101", "박성철", "1122345");
+
+        userDao.add(user);
+        assertEquals(userDao.getCount(), 1);
+
+        User user2 = userDao.findById("101");
+
+        assertEquals(user2.getName(), "박성철");
+
     }
 
 
