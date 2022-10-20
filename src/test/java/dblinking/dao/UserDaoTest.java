@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +26,7 @@ class UserDaoTest {
         User user = new User("9", "EternityHwan", "11234");
         userDao.add(user);
 
-        User selectedUser = userDao.findById("8");
+        User selectedUser = userDao.findById("9");
         Assertions.assertEquals("EternityHwan", selectedUser.getName());
     }
 
@@ -44,6 +45,25 @@ class UserDaoTest {
         User user2 = userDao.findById("101");
 
         assertEquals(user2.getName(), "박성철");
+
+    }
+
+    @Test
+    void count() throws SQLException, ClassNotFoundException {
+        UserDao userDao = context.getBean("localConnectionMaker", UserDao.class);
+        User user1 = new User("121", "박성철", "61321");
+        User user2 = new User("122", "이길원", "82465");
+        User user3 = new User("123", "박범진", "55064");
+
+        userDao.deleteAll();
+        assertEquals(userDao.getCount(), 0);
+
+        userDao.add(user1);
+        assertEquals(userDao.getCount(), 1);
+
+        userDao.add(user2);
+        assertEquals(userDao.getCount(), 2);
+
 
     }
 
