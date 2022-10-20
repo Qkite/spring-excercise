@@ -21,7 +21,7 @@ class UserDaoTest {
 
     @Test
     void addAndSelect() throws SQLException, ClassNotFoundException {
-        UserDao userDao = context.getBean("localConnectionMaker", UserDao.class); 
+        UserDao userDao = context.getBean("localConnectionMaker", UserDao.class);
         User user = new User("9", "EternityHwan", "11234");
         userDao.add(user);
 
