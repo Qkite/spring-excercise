@@ -3,6 +3,7 @@ package dblinking.dao;
 import dblinking.connection_maker.ConnectionMaker;
 import dblinking.connection_maker.LocalConnectionMaker;
 import dblinking.domain.User;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,18 +41,26 @@ public class UserDao {
 
         PreparedStatement ps = c.prepareStatement("SELECT * FROM users WHERE id = ?");
 
-        ps.setString(1,id);
+        ps.setString(1, id);
 
         ResultSet rs = ps.executeQuery();
 
-        rs.next();
-        String[] outputs = {rs.getString(1), rs.getString(2),  rs.getString(3)};
+        //rs.next()가 null이 되는 경우도 있음
+
+        User user = null;
+        if (rs.next()) {
+            user = new User(rs.getString(1), rs.getString(2), rs.getString(3));
+        }
 
         rs.close();
         ps.close();
         c.close();
 
-        return new User(outputs[0], outputs[1], outputs[2]);
+        if(user == null){
+            throw new EmptyResultDataAccessException(1);
+        }
+
+        return user;
 
     }
 

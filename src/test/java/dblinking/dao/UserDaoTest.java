@@ -2,10 +2,12 @@ package dblinking.dao;
 
 import dblinking.domain.User;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -20,9 +22,16 @@ class UserDaoTest {
     @Autowired
     ApplicationContext context;
 
+    UserDao userDao;
+
+    @BeforeEach
+    void setUp(){
+        this.userDao = context.getBean("localConnectionMaker", UserDao.class);
+    }
+
+
     @Test
     void addAndSelect() throws SQLException, ClassNotFoundException {
-        UserDao userDao = context.getBean("localConnectionMaker", UserDao.class);
         User user = new User("9", "EternityHwan", "11234");
         userDao.add(user);
 
@@ -33,7 +42,6 @@ class UserDaoTest {
     @Test
     void addAndGet() throws SQLException, ClassNotFoundException {
 
-        UserDao userDao = context.getBean("localConnectionMaker", UserDao.class);
         userDao.deleteAll();
         assertEquals(userDao.getCount(), 0);
 
@@ -50,7 +58,6 @@ class UserDaoTest {
 
     @Test
     void count() throws SQLException, ClassNotFoundException {
-        UserDao userDao = context.getBean("localConnectionMaker", UserDao.class);
         User user1 = new User("121", "박성철", "61321");
         User user2 = new User("122", "이길원", "82465");
         User user3 = new User("123", "박범진", "55064");
@@ -63,7 +70,14 @@ class UserDaoTest {
 
         userDao.add(user2);
         assertEquals(userDao.getCount(), 2);
+    }
 
+    @Test
+    void findById(){
+
+        assertThrows(EmptyResultDataAccessException.class, () -> {
+            userDao.findById("30");
+        });
 
     }
 
