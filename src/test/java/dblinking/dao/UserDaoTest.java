@@ -27,7 +27,7 @@ class UserDaoTest {
         userDao.add(user);
 
         User selectedUser = userDao.findById("9");
-        Assertions.assertEquals("EternityHwan", selectedUser.getName());
+        Assertions.assertEquals(user.getName(), selectedUser.getName());
     }
 
     @Test
