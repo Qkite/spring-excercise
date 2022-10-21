@@ -30,10 +30,7 @@ public class UserDao {
         try {
 
             c = connectionMaker.makeConnection();
-            ps = c.prepareStatement("INSERT INTO users(id, name, password) VALUES(?, ?, ?)");
-            ps.setString(1, user.getId());
-            ps.setString(2, user.getName());
-            ps.setString(3, user.getPassword());
+            ps = new AddStrategy(user).makePreparedStatement(c);
             ps.executeUpdate();
 
         } catch (SQLException e) {
