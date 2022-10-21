@@ -23,7 +23,7 @@ public class UserDao {
 
     }
 
-    // 공통 로직
+    // add와 deleteAll의 공통로직
     public void jdbcContextWithStatementStrategy(StatementStrategy stmt) {
         Connection c = null;
         PreparedStatement ps = null;
@@ -61,6 +61,12 @@ public class UserDao {
 
     }
 
+
+    public void deleteAll() throws SQLException, ClassNotFoundException{
+        jdbcContextWithStatementStrategy(new DeleteAllStrategy());
+    }
+
+    
     public User findById(String id) throws SQLException, ClassNotFoundException {
         Connection c = connectionMaker.makeConnection();
 
@@ -87,11 +93,6 @@ public class UserDao {
 
         return user;
 
-    }
-
-
-    public void deleteAll() throws SQLException, ClassNotFoundException{
-        jdbcContextWithStatementStrategy(new DeleteAllStrategy());
     }
 
     public int getCount() throws SQLException, ClassNotFoundException {
