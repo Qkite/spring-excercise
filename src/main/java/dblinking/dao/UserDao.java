@@ -23,69 +23,6 @@ public class UserDao {
 
     }
 
-    public void add(User user) throws SQLException, ClassNotFoundException {
-
-        Connection c = null;
-        PreparedStatement ps = null;
-        try {
-
-            c = connectionMaker.makeConnection();
-            ps = new AddStrategy(user).makePreparedStatement(c);
-            ps.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if(ps != null){
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-
-                }
-
-            }
-
-            if(c != null){
-                try {
-                    c.close();
-                } catch (SQLException e) {
-
-                }
-            }
-        }
-
-    }
-
-    public User findById(String id) throws SQLException, ClassNotFoundException {
-        Connection c = connectionMaker.makeConnection();
-
-        PreparedStatement ps = c.prepareStatement("SELECT * FROM users WHERE id = ?");
-
-        ps.setString(1, id);
-
-        ResultSet rs = ps.executeQuery();
-
-        //rs.next()가 null이 되는 경우도 있음
-
-        User user = null;
-        if (rs.next()) {
-            user = new User(rs.getString(1), rs.getString(2), rs.getString(3));
-        }
-
-        rs.close();
-        ps.close();
-        c.close();
-
-        if(user == null){
-            throw new EmptyResultDataAccessException(1);
-        }
-
-        return user;
-
-    }
-
     // 공통 로직
     public void jdbcContextWithStatementStrategy(StatementStrategy stmt) {
         Connection c = null;
@@ -117,6 +54,41 @@ public class UserDao {
 
         }
     }
+
+
+    public void add(User user) throws SQLException, ClassNotFoundException {
+        jdbcContextWithStatementStrategy(new AddStrategy(user));
+
+    }
+
+    public User findById(String id) throws SQLException, ClassNotFoundException {
+        Connection c = connectionMaker.makeConnection();
+
+        PreparedStatement ps = c.prepareStatement("SELECT * FROM users WHERE id = ?");
+
+        ps.setString(1, id);
+
+        ResultSet rs = ps.executeQuery();
+
+        //rs.next()가 null이 되는 경우도 있음
+
+        User user = null;
+        if (rs.next()) {
+            user = new User(rs.getString(1), rs.getString(2), rs.getString(3));
+        }
+
+        rs.close();
+        ps.close();
+        c.close();
+
+        if(user == null){
+            throw new EmptyResultDataAccessException(1);
+        }
+
+        return user;
+
+    }
+
 
     public void deleteAll() throws SQLException, ClassNotFoundException{
         jdbcContextWithStatementStrategy(new DeleteAllStrategy());
