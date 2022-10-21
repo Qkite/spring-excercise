@@ -86,19 +86,20 @@ public class UserDao {
 
     }
 
-    public void deleteAll() throws SQLException, ClassNotFoundException {
+    // 공통 로직
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) {
         Connection c = null;
         PreparedStatement ps = null;
         try {
             c = connectionMaker.makeConnection();
-            ps = new DeleteAllStrategy().makePreparedStatement(c);
+            ps = stmt.makePreparedStatement(c);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } finally { // error가 나도 실행되는 블럭
-            if(ps != null){
+            if (ps != null) {
                 try {
                     ps.close();
                 } catch (SQLException e) {
@@ -106,7 +107,7 @@ public class UserDao {
                 }
             }
 
-            if(c != null){
+            if (c != null) {
                 try {
                     c.close();
                 } catch (SQLException e) {
@@ -115,8 +116,10 @@ public class UserDao {
             }
 
         }
+    }
 
-
+    public void deleteAll() throws SQLException, ClassNotFoundException{
+        jdbcContextWithStatementStrategy(new DeleteAllStrategy());
     }
 
     public int getCount() throws SQLException, ClassNotFoundException {
